@@ -1,0 +1,422 @@
+/*
+ * style.css — NutriSearch
+ * ========================
+ * Author : Clive Tanaka Mushipe
+ * Course : ALU Back-End Engineering — 2026
+ */
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Design tokens ── */
+:root {
+  --bg:         #0a0a0a;
+  --surface:    #141414;
+  --border:     #282828;
+  --muted:      #555;
+  --text:       #f0f0f0;
+  --sub:        #888;
+  --accent:     #b5ff4d;   /* neon lime — health/nutrition feel */
+  --danger:     #ff5f5f;
+  --pill-bg:    #1c1c1c;
+  --card-bg:    #111;
+  --cal-color:  #ffb347;
+  --prot-color: #7ec8e3;
+  --carb-color: #f5a6c8;
+  --fat-color:  #a78bfa;
+  --radius:     14px;
+  --radius-sm:  8px;
+  --mono: 'DM Mono', monospace;
+  --sans: 'Syne', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+}
+
+/* subtle grid texture */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Hero ─────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 85vh;
+  width: 100%;
+  padding: 2rem 1rem 1rem;
+  transition: min-height .5s ease, padding .5s ease;
+}
+
+/* collapse hero once results appear */
+body.has-results .hero {
+  min-height: 0;
+  padding: 2.5rem 1rem 1.5rem;
+}
+
+.label {
+  font-family: var(--mono);
+  font-size: .7rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1.2rem;
+  opacity: 0;
+  animation: fadeUp .6s .1s forwards;
+}
+
+.heading {
+  font-size: clamp(2.2rem, 6vw, 4rem);
+  font-weight: 800;
+  line-height: 1.1;
+  text-align: center;
+  letter-spacing: -.02em;
+  max-width: 700px;
+  opacity: 0;
+  animation: fadeUp .6s .2s forwards;
+}
+
+.heading span { color: var(--accent); }
+
+.subheading {
+  margin-top: .75rem;
+  font-family: var(--mono);
+  font-size: .82rem;
+  color: var(--sub);
+  text-align: center;
+  max-width: 580px;
+  line-height: 1.7;
+  opacity: 0;
+  animation: fadeUp .6s .3s forwards;
+}
+
+/* ── Search box ── */
+.search-wrap {
+  position: relative;
+  width: min(680px, 92vw);
+  margin-top: 2.5rem;
+  opacity: 0;
+  animation: fadeUp .6s .4s forwards;
+}
+
+.search-box {
+  width: 100%;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.1rem 5.5rem 1.1rem 1.4rem;
+  font-family: var(--sans);
+  font-size: 1rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  caret-color: var(--accent);
+}
+
+.search-box::placeholder { color: var(--muted); }
+
+.search-box:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(181,255,77,.08);
+}
+
+.search-btn {
+  position: absolute;
+  right: .55rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: 9px;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform .15s;
+}
+.search-btn:hover  { transform: translateY(-50%) scale(1.07); }
+.search-btn:active { transform: translateY(-50%) scale(.95); }
+.search-btn svg { width: 16px; height: 16px; }
+
+/* ── Suggestion pills ── */
+.pills {
+  margin-top: 1.1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  justify-content: center;
+  max-width: 680px;
+  opacity: 0;
+  animation: fadeUp .6s .5s forwards;
+}
+
+.pill {
+  background: var(--pill-bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: .38rem .9rem;
+  font-size: .8rem;
+  font-family: var(--mono);
+  color: var(--sub);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color .15s, color .15s, background .15s;
+}
+.pill:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(181,255,77,.05);
+}
+
+/* ── Results section ── */
+#results-section {
+  position: relative;
+  z-index: 1;
+  width: min(960px, 96vw);
+  padding: 0 1rem 4rem;
+  display: none;
+}
+body.has-results #results-section { display: block; }
+
+/* ── Controls row (sort + filter) ── */
+.controls-row {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  margin-bottom: 1.4rem;
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  flex-wrap: wrap;
+}
+
+.control-label {
+  font-family: var(--mono);
+  font-size: .68rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  min-width: 36px;
+}
+
+.btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+}
+
+.ctrl-btn {
+  background: var(--pill-bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: .28rem .75rem;
+  font-family: var(--mono);
+  font-size: .7rem;
+  color: var(--sub);
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.ctrl-btn:hover, .ctrl-btn.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(181,255,77,.06);
+}
+
+/* results meta line */
+.results-meta {
+  font-family: var(--mono);
+  font-size: .73rem;
+  color: var(--sub);
+  margin-bottom: 1.2rem;
+  min-height: 1.2em;
+}
+.results-meta strong { color: var(--text); }
+.results-meta .dim   { color: var(--muted); font-size: .65rem; }
+
+/* ── Cards grid ── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.food-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: .7rem;
+  animation: fadeUp .35s ease both;
+  transition: transform .2s, box-shadow .2s, border-color .2s;
+}
+.food-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0,0,0,.6);
+  border-color: #333;
+}
+
+.food-name {
+  font-size: .95rem;
+  font-weight: 600;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.food-brand {
+  font-family: var(--mono);
+  font-size: .68rem;
+  color: var(--sub);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-top: -.4rem;
+}
+
+/* macro grid inside card */
+.macros {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: .4rem;
+  margin-top: auto;
+}
+
+.macro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #1a1a1a;
+  border-radius: var(--radius-sm);
+  padding: .45rem .2rem;
+  gap: .12rem;
+}
+
+.macro-val   { font-family: var(--mono); font-size: .82rem; font-weight: 500; }
+.macro-label { font-family: var(--mono); font-size: .56rem; color: var(--sub); text-transform: uppercase; letter-spacing: .06em; }
+
+.macro.cal  .macro-val { color: var(--cal-color); }
+.macro.prot .macro-val { color: var(--prot-color); }
+.macro.carb .macro-val { color: var(--carb-color); }
+.macro.fat  .macro-val { color: var(--fat-color); }
+
+.serving {
+  font-family: var(--mono);
+  font-size: .66rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  padding-top: .55rem;
+}
+
+/* ── State boxes (loading / empty / error) ── */
+.state-box {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 3.5rem 1rem;
+}
+.state-icon { font-size: 2.5rem; opacity: .35; }
+.state-text {
+  font-family: var(--mono);
+  font-size: .83rem;
+  color: var(--sub);
+  text-align: center;
+  max-width: 340px;
+  line-height: 1.8;
+}
+
+.spinner {
+  width: 30px; height: 30px;
+  border: 2.5px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+
+/* load more */
+.load-more-btn {
+  display: block;
+  margin: 2rem auto 0;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--sub);
+  font-family: var(--mono);
+  font-size: .78rem;
+  padding: .65rem 2rem;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.load-more-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── Footer ── */
+footer {
+  position: relative;
+  z-index: 1;
+  margin-top: auto;
+  padding: 1.5rem;
+  font-family: var(--mono);
+  font-size: .63rem;
+  color: var(--muted);
+  text-align: center;
+}
+footer a { color: var(--muted); text-decoration: underline; }
+
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* stagger card entrance */
+.food-card:nth-child(1)  { animation-delay: .04s; }
+.food-card:nth-child(2)  { animation-delay: .08s; }
+.food-card:nth-child(3)  { animation-delay: .12s; }
+.food-card:nth-child(4)  { animation-delay: .16s; }
+.food-card:nth-child(5)  { animation-delay: .20s; }
+.food-card:nth-child(6)  { animation-delay: .24s; }
+.food-card:nth-child(7)  { animation-delay: .28s; }
+.food-card:nth-child(8)  { animation-delay: .32s; }
+.food-card:nth-child(9)  { animation-delay: .36s; }
+.food-card:nth-child(10) { animation-delay: .40s; }
+
+/* ── Responsive ── */
+@media (max-width: 500px) {
+  .heading { font-size: 1.8rem; }
+  .macros  { grid-template-columns: repeat(2, 1fr); }
+  .controls-row { gap: .5rem; }
+}

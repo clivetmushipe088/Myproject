@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NutriSearch — Dietary Planning Tool</title>
+
+  <!--
+    NutriSearch — Nutritional Food Search & Dietary Planning Tool
+    =============================================================
+    Author : Clive Tanaka Mushipe
+    Course : ALU Back-End Engineering
+    Year   : 2026
+
+    External API
+    ------------
+    Open Food Facts API
+    Endpoint : GET https://myfitnesspal2.p.rapidapi.com/searchByKeyword
+    Docs     : https://rapidapi.com/unitedapi/api/myfitnesspal2/
+    Key      : 3e9bb63a98msnfdec368b2925b63p177043jsnf542b5dc8f8c
+
+    Fonts
+    -----
+    Syne & DM Mono via Google Fonts — https://fonts.google.com
+  -->
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── Hero / Search ─────────────────────────────────────── -->
+  <section class="hero">
+    <p class="label">// ALU Back-End Engineering — Clive T. Mushipe</p>
+    <h1 class="heading">What's in your <span>food?</span></h1>
+    <p class="subheading">Search any food item to compare calories, protein, carbs &amp; fat — then sort and filter to match your dietary goals.</p>
+    <p class="subheading">Connection to api SLOW, SEARCH THREE TIMES..</p>
+
+    <div class="search-wrap">
+      <input
+        class="search-box"
+        id="searchInput"
+        type="text"
+        placeholder="e.g. chicken breast, oats, avocado…"
+        autocomplete="off"
+        spellcheck="false"
+        maxlength="100"
+      />
+      <button class="search-btn" id="searchBtn" title="Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="19" x2="12" y2="5"/>
+          <polyline points="5 12 12 5 19 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Quick suggestion pills -->
+    <div class="pills">
+      <button class="pill" data-query="chicken breast">🍗 Chicken Breast</button>
+      <button class="pill" data-query="brown rice">🍚 Brown Rice</button>
+      <button class="pill" data-query="avocado">🥑 Avocado</button>
+      <button class="pill" data-query="greek yogurt">🫙 Greek Yogurt</button>
+      <button class="pill" data-query="banana">🍌 Banana</button>
+      <button class="pill" data-query="egg">🥚 Egg</button>
+      <button class="pill" data-query="oats">🌾 Oats</button>
+      <button class="pill" data-query="salmon">🐟 Salmon</button>
+      <button class="pill" data-query="sweet potato">🍠 Sweet Potato</button>
+      <button class="pill" data-query="almonds">🌰 Almonds</button>
+    </div>
+  </section>
+
+  <!-- ── Results ───────────────────────────────────────────── -->
+  <section id="results-section">
+
+    <!-- Sort bar -->
+    <div class="controls-row">
+      <div class="control-group">
+        <span class="control-label">Sort</span>
+        <div class="btn-group">
+          <button class="ctrl-btn active" data-sort="default">Default</button>
+          <button class="ctrl-btn" data-sort="cal-asc">Cal ↑</button>
+          <button class="ctrl-btn" data-sort="cal-desc">Cal ↓</button>
+          <button class="ctrl-btn" data-sort="prot-desc">Protein ↓</button>
+          <button class="ctrl-btn" data-sort="carb-asc">Carbs ↑</button>
+        </div>
+      </div>
+
+      <!-- Filter bar — this is the key interaction feature -->
+      <div class="control-group">
+        <span class="control-label">Filter</span>
+        <div class="btn-group">
+          <button class="ctrl-btn filter-btn active" data-filter="all">All</button>
+          <button class="ctrl-btn filter-btn" data-filter="high-protein">High Protein (&gt;20g)</button>
+          <button class="ctrl-btn filter-btn" data-filter="low-cal">Low Calorie (&lt;150 kcal)</button>
+          <button class="ctrl-btn filter-btn" data-filter="low-carb">Low Carb (&lt;10g)</button>
+          <button class="ctrl-btn filter-btn" data-filter="high-cal">High Calorie (&gt;300 kcal)</button>
+        </div>
+      </div>
+    </div>
+
+    <p class="results-meta" id="resultsMeta"></p>
+    <div class="cards-grid" id="cardsGrid"></div>
+    <button class="load-more-btn" id="loadMoreBtn" style="display:none;">Load more results →</button>
+  </section>
+
+  <footer>
+    Nutritional data via
+    <a href="https://rapidapi.com/unitedapi/api/myfitnesspal2/" target="_blank" rel="noopener">MyFitnessPal API</a>
+    by UnitedAPI on RapidAPI &nbsp;·&nbsp; Built by Clive T. Mushipe — ALU 2026
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
