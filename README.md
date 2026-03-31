@@ -46,7 +46,9 @@ nutrisearch/
 ├── app.js       — API calls, sort/filter logic, DOM rendering
 └── README.md    — This file
 ```
+## DEMP VIDEO
 
+https://drive.google.com/file/d/1bQPFvoE8C6KqPeY7wR7rKUjqnENRST9M/view?usp=sharing
 ---
 
 ## Part One: Running Locally
